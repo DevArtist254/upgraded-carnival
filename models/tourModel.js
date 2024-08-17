@@ -45,7 +45,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       validate: {
         validator: function(val) {
-          //only points to current doc on new document creation
+          // this only points to current doc on NEW document creation
           return val < this.price;
         },
         message: 'Discount price ({VALUE}) should be below regular price'
@@ -78,6 +78,13 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
+
+// tourSchema.path('priceDiscount').validate(function(value) {
+//   if (value < this.price) {
+//     throw new Error('Invaild price', 400);
+//   }
+//   return true;
+// }, 'Discount price `{VALUE}` should be below regular price');
 
 //Doc Middleware: runs before .save() and create()
 
