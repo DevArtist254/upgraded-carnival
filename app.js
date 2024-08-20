@@ -9,7 +9,7 @@ const hpp = require('hpp');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoute');
-//const userRouter = require('./routes/userRoute');
+const userRouter = require('./routes/userRoute');
 
 //app init
 const app = express();
@@ -67,13 +67,12 @@ app.use(express.static(`${__dirname}/public`));
 
 //Routes
 app.use(`/api/v1/tours`, tourRouter);
-//app.use(`/api/v1/users`, userRouter);
+app.use(`/api/v1/users`, userRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-console.log(process.env.NODE_ENV);
 app.use(globalErrorHandler);
 
 module.exports = app;
