@@ -175,3 +175,31 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+
+exports.isLoggedin = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      //verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookie.jwt,
+        process.env.JWT_SECRET
+      );
+
+      const currentUser = await User.findById(decoded.id);
+
+      if (!currentUser) {
+        return next();
+      }
+
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
+      next();
+    }
+  }
+  next();
+};

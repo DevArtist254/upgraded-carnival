@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -6,15 +6,26 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const cookieParser = require('cookie-parser');
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoute');
+
 const userRouter = require('./routes/userRoute');
 
 const reviewRouter = require(`./routes/reviewRoute`);
+const viewRouter = require('./routes/viewRouter');
 
 //app init
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+//Serving static files
+app.use(express.static(`${__dirname}/public`));
 
 //1) Global Middleware
 //Set security http headers
@@ -39,6 +50,7 @@ app.use(express.json({ limit: '10kb' }));
 
 //Data sanitization NOSQL query injection
 app.use(mongoSanitize());
+app.use(cookieParser());
 
 //Prevent parameter pollution
 app.use(
@@ -64,10 +76,8 @@ app.use((req, res, next) => {
   next();
 });
 
-//Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 //Routes
+app.use('/', viewRouter);
 app.use(`/api/v1/tours`, tourRouter);
 app.use(`/api/v1/users`, userRouter);
 app.use(`/api/v1/reviews`, reviewRouter);
