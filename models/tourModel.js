@@ -70,33 +70,72 @@ const tourSchema = new mongoose.Schema(
     secretTour: {
       type: Boolean,
       default: false
-    }
+    },
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      description: String
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String
+      }
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
-// tourSchema.path('priceDiscount').validate(function(value) {
-//   if (value < this.price) {
-//     throw new Error('Invaild price', 400);
-//   }
-//   return true;
-// }, 'Discount price `{VALUE}` should be below regular price');
+tourSchema
+  .virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id'
+  })
 
-//Doc Middleware: runs before .save() and create()
+  // tourSchema.path('priceDiscount').validate(function(value) {
+  //   if (value < this.price) {
+  //     throw new Error('Invaild price', 400);
+  //   }
+  //   return true;
+  // }, 'Discount price `{VALUE}` should be below regular price');
 
-// tourSchema.pre('save', function(next) {
-//   console.log('Will happen before the document is saves');
-//   next();
-// });
+  //Doc Middleware: runs before .save() and create()
 
-tourSchema.pre('save', function(next) {
-  this.slug = slugify(this.name, { lower: true });
-  next();
-});
+  // tourSchema.pre('save', function(next) {
+  //   console.log('Will happen before the document is saves');
+  //   next();
+  // });
+
+  .tourSchema.pre('save', function(next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
+  });
 
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
