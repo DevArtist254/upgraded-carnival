@@ -195,6 +195,7 @@ exports.isLoggedin = async (req, res, next) => {
         return next();
       }
 
+      //Available in our pug temp res.locals
       res.locals.user = currentUser;
       return next();
     } catch (err) {

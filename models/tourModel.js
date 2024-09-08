@@ -60,6 +60,10 @@ const tourSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    imageCover: {
+      type: String,
+      required: [true, `A tour must have a cover image`]
+    },
     images: [String],
     createdAt: {
       type: Date,
@@ -111,31 +115,30 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
-tourSchema
-  .virtual('reviews', {
-    ref: 'Review',
-    foreignField: 'tour',
-    localField: '_id'
-  })
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+});
 
-  // tourSchema.path('priceDiscount').validate(function(value) {
-  //   if (value < this.price) {
-  //     throw new Error('Invaild price', 400);
-  //   }
-  //   return true;
-  // }, 'Discount price `{VALUE}` should be below regular price');
+// tourSchema.path('priceDiscount').validate(function(value) {
+//   if (value < this.price) {
+//     throw new Error('Invaild price', 400);
+//   }
+//   return true;
+// }, 'Discount price `{VALUE}` should be below regular price');
 
-  //Doc Middleware: runs before .save() and create()
+//Doc Middleware: runs before .save() and create()
 
-  // tourSchema.pre('save', function(next) {
-  //   console.log('Will happen before the document is saves');
-  //   next();
-  // });
+// tourSchema.pre('save', function(next) {
+//   console.log('Will happen before the document is saves');
+//   next();
+// });
 
-  .tourSchema.pre('save', function(next) {
-    this.slug = slugify(this.name, { lower: true });
-    next();
-  });
+tourSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });

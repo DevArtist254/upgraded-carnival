@@ -5,14 +5,15 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "nodemon server.js",
-    "start:prod": "NODE_ENV=production nodemon server.js"
+    "start:prod": "NODE_ENV=production nodemon server.js",
+    "watch:js": "parcel watch ./public/js/index.js --dist-dir ./public"
   },
   "keywords": [],
   "author": "Devartist",
   "license": "ISC",
   "dependencies": {
-    "@babel/polyfill": "^7.4.4",
-    "axios": "^1.7.5",
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^7.0.0",
@@ -40,8 +41,16 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
+    "parcel": "^2.12.0",
     "prettier": "^1.17.0"
   },
+  "targets": {
+    "main": false,
+    "default": {
+      "distDir": "./public"
+    }
+  },
+  "browserslist": "> 0.25%, not dead",
   "engines": {
     "node": ">=20.0.0"
   }
