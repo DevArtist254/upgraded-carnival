@@ -584,43 +584,65 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"6jJBZ":[function(require,module,exports) {
 /* eslint-disable */ var _login = require("./login");
-console.log("Hello world");
+const loginForm = document.querySelector(".form--login");
+if (loginForm) loginForm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    (0, _login.login)(email, password);
+});
 
 },{"./login":"kfjFt"}],"kfjFt":[function(require,module,exports) {
-/* eslint-disable */ console.log("hello"); // import axios from 'axios';
- // import { showAlert } from './alerts';
- // export const login = async (email, password) => {
- //   try {
- //     const res = await axios({
- //       method: 'POST',
- //       url: 'http://127.0.0.1:3000/api/v1/users/login',
- //       data: {
- //         email,
- //         password
- //       }
- //     });
- //     if (res.data.status === 'success') {
- //       showAlert('success', 'Logged in successfully!');
- //       window.setTimeout(() => {
- //         location.assign('/');
- //       }, 1500);
- //     }
- //   } catch (err) {
- //     showAlert('error', err.response.data.message);
- //   }
- // };
- // export const logout = async () => {
- //   try {
- //     const res = await axios({
- //       method: 'GET',
- //       url: 'http://127.0.0.1:3000/api/v1/users/logout'
- //     });
- //     if ((res.data.status = 'success')) location.reload(true);
- //   } catch (err) {
- //     console.log(err.response);
- //     showAlert('error', 'Error logging out! Try again.');
- //   }
- // };
+/* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "login", ()=>login);
+const login = async (email, password)=>{
+    try {
+        const res = await axios({
+            method: "POST",
+            url: "http://127.0.0.1:3000/api/v1/users/login",
+            data: {
+                email,
+                password
+            }
+        });
+        if (res.status === 200) window.setTimeout(()=>{
+            location.assign("/");
+        }, 1500);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"4L4po"}],"4L4po":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
 
 },{}]},["bt3ED","6jJBZ"], "6jJBZ", "parcelRequire98f5")
 

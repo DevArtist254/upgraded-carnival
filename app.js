@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cors = require('cors');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const cookieParser = require('cookie-parser');
@@ -20,6 +21,8 @@ const viewRouter = require('./routes/viewRouter');
 
 //app init
 const app = express();
+
+app.use(cors());
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -71,7 +74,7 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   res.setHeader(
     'Content-Security-Policy',
-    "script-src 'self' https://apis.google.com 'unsafe-eval'"
+    "script-src 'self' data https://apis.google.com 'unsafe-eval' https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"
   );
   next();
 });
