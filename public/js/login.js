@@ -9,9 +9,12 @@ export const login = async (email, password) => {
                 email, password
             }
         });
-        
-        if (res.status === 200) {
 
+        const jwtString = JSON.stringify(res.data.token);
+
+        document.cookie = `jwt=${jwtString}`;
+
+        if (res.status === 200) {        
             window.setTimeout(() => {
                 location.assign('/');
             }, 1500);

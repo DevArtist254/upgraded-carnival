@@ -606,6 +606,8 @@ const login = async (email, password)=>{
                 password
             }
         });
+        const jwtString = JSON.stringify(res.data.token);
+        document.cookie = `jwt=${jwtString}`;
         if (res.status === 200) window.setTimeout(()=>{
             location.assign("/");
         }, 1500);

@@ -1,8 +1,39 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
 const factory = require(`./../controllers/handlerFactory`);
+
+const storage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError(`Not an image! Please upload only images.`, 400), false);
+  }
+};
+
+exports.upload = multer({
+  storage: storage,
+  fileFilter: multerFilter
+});
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat(`jpeg`)
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -31,21 +62,17 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  const { password, passwordConfirm, name, email } = req.body;
+  const { password, passwordConfirm } = req.body;
 
   if (password || passwordConfirm) {
-    return new AppError(
-      `Please update your password here /updateMyPassword`,
-      400
+    return next(
+      new AppError(`Please update your password here /updateMyPassword`, 400)
     );
   }
 
-  if (name || email) {
-    return new AppError('Name and email cant be changed', 400);
-  }
-
   // filter out the unwanted fields
-  const filteredBody = filterObj(req.body, 'name', 'email', 'password');
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
 
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,

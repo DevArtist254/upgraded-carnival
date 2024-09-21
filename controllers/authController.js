@@ -181,7 +181,7 @@ exports.isLoggedin = async (req, res, next) => {
     try {
       //verify token
       const decoded = await promisify(jwt.verify)(
-        req.cookie.jwt,
+        req.cookies.jwt,
         process.env.JWT_SECRET
       );
 

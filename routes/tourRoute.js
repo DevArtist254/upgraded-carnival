@@ -9,7 +9,9 @@ const {
   getTourStats,
   getMonthlyPlan,
   getToursWithin,
-  getDistances
+  getDistances,
+  upload,
+  resizeTourImages
 } = require('../controllers/tourController');
 
 const { protect, restrictTo } = require(`./../controllers/authController`);
@@ -34,7 +36,16 @@ router.use(protect, restrictTo('admin', 'lead-guide'));
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/').post(createTour);
-router.route('/:id').patch(updateTour);
+
+router.route('/:id').patch(
+  upload.fields([
+    { name: 'imageCover', maxCount: 1 },
+    { name: 'images', maxCount: 3 }
+  ]),
+  resizeTourImages,
+  updateTour
+);
+
 router.route('/:id').delete(deleteTour);
 
 module.exports = router;
